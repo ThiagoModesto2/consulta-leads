@@ -3,12 +3,6 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { api } from '@/config/links';
 
-const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 export async function POST(req: NextRequest) {
   if (req.method !== 'POST') {
     return NextResponse.json({ error: 'Método não permitido' }, { status: 405 });
