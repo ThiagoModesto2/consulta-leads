@@ -3,7 +3,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { api } from '@/config/links';
 
-export const config = {
+const config = {
   api: {
     bodyParser: false,
   },
