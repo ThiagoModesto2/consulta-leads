@@ -2,10 +2,18 @@
 
 import { type FC } from "react";
 
-import Welcome from "@/components/Welcome";
+import Header from "@/components/common/Header";
 
 export const Dashboard: FC = () => {
-  return <Welcome />;
+  return (
+    <>
+      <Header />
+      <br />
+      <p style={{ textAlign: "center", fontWeight: "bold", fontSize: 24 }}>
+        Olá Rato!
+      </p>
+    </>
+  );
 };
 
 export default Dashboard;

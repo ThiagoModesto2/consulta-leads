@@ -14,3 +14,23 @@
 #header img {
   width: 80px;
 }
+
+#nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#ul > li > a {
+  list-style: none;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
