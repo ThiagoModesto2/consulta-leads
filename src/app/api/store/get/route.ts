@@ -12,11 +12,3 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Erro ao buscar as lojas' }, { status: 500 });
   }
 }
-
-export default async function handler(req: NextRequest) {
-  if (req.method === 'GET') {
-    return GET(req);
-  } else {
-    return NextResponse.json({ error: 'Método não permitido' }, { status: 405 });
-  }
-}
