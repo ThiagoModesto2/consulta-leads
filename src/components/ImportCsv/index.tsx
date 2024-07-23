@@ -34,7 +34,10 @@ const ImportCsv: FC = () => {
   };
 
   const handleInit = async () => {
-    if (!token) return;
+    if (!token) {
+      toast.error("Token não definido.");
+      return;
+    }
 
     if (!file) {
       toast.error("Por favor, selecione um arquivo CSV.");
