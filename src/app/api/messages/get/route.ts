@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
-    const url = id ? `${api}/api/messages/${id}` : `${api}/api/message/index.php`;
+    const url = id ? `${api}/api/messages/${id}` : `${api}/api/message/index.php?all_stores=true`;
 
     const response = await axios.get(url);
 
