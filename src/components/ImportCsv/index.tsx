@@ -34,6 +34,8 @@ const ImportCsv: FC = () => {
   };
 
   const handleInit = async () => {
+    if (!token) return;
+
     if (!file) {
       toast.error("Por favor, selecione um arquivo CSV.");
       return;
