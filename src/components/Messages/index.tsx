@@ -94,7 +94,7 @@ const Messages: FC = () => {
   const handleDeleteMessage = async (id: number) => {
     setIsVisible(true);
     try {
-      await axios.delete(`/api/messages/${id}/delete?id=${id}`);
+      await axios.delete(`/api/messages/delete?id=${id}`);
       setMessages(messages.filter((message) => message.id !== id));
       toast.success("Mensagem excluída com sucesso!");
     } catch (error) {
