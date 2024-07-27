@@ -14,7 +14,8 @@ interface Message {
   message: string;
   orderMessage: number;
   status: string;
-  store_id: number | null; // Allow null
+  store_id: number | null;
+  origem_loja?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -29,7 +30,7 @@ const Messages: FC = () => {
   const [storeName, setStoreName] = useState<string>("");
   const [orderMessage, setOrderMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null); // Allow null
+  const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [allStores, setAllStores] = useState<Store[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -72,12 +73,23 @@ const Messages: FC = () => {
 
     setIsVisible(true);
     try {
-      const response = await axios.post<Message>("/api/messages/save", {
+      const data: any = {
         message: translatedMessage,
         orderMessage: parseInt(orderMessage),
         status: selectedStatus,
         store_id: selectedStoreId,
-      });
+        origem_loja: null,
+      };
+
+      if (
+        selectedStoreId?.toLowerCase() === "kirvano" ||
+        selectedStoreId?.toLowerCase() === "perfect-pay"
+      ) {
+        data.store_id = null;
+        data.origem_loja = selectedStoreId;
+      }
+
+      const response = await axios.post<Message>("/api/messages/save", data);
       setMessages([...messages, response.data]);
       setStoreName("");
       setOrderMessage("");
@@ -234,11 +246,13 @@ const Messages: FC = () => {
           <select
             id="storeSelect"
             value={selectedStoreId || ""}
-            onChange={(e) => setSelectedStoreId(Number(e.target.value))}
+            onChange={(e) => setSelectedStoreId(e.target.value)}
           >
             <option value="" disabled>
               Selecione uma loja
             </option>
+            <option value="perfect-pay">Perfect Pay</option>
+            <option value="kirvano">Kirvano</option>
             {allStores.map((store) => (
               <option key={store.id} value={store.id}>
                 {store.name}
@@ -255,7 +269,7 @@ const Messages: FC = () => {
               <th>Mensagem</th>
               <th>Ordem</th>
               <th>Status</th>
-              <th>Loja</th>
+              <th>Loja/Origem</th>
               <th>Criado</th>
               <th>Ação</th>
             </tr>
@@ -273,10 +287,9 @@ const Messages: FC = () => {
                 <td>{message.orderMessage}</td>
                 <td>{translateStatus(message.status)}</td>
                 <td>
-                  {
+                  {message.origem_loja ||
                     allStores.find((store) => store.id === message.store_id)
-                      ?.name
-                  }
+                      ?.name}
                 </td>
                 <td>{new Date(message.createdAt).toLocaleString()}</td>
                 <td className={styles.options}>
