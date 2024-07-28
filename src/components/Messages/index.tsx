@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useRef, useEffect, type FC, FormEvent } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -58,19 +56,23 @@ const Messages: FC = () => {
     }
   };
 
+  const translateNewlines = (text: string) => {
+    return text.replace(/\n/g, "\\n");
+  };
+
+  const translatedMessage = translateNewlines(storeName)
+    .replace(/{{nome}}/g, "{{name}}")
+    .replace(/{{telefone}}/g, "{{phone}}")
+    .replace(/{{email}}/g, "{{email}}")
+    .replace(/{{documento}}/g, "{{document}}")
+    .replace(/{{pix}}/g, "{{pix}}")
+    .replace(/{{ms}}/g, "{{ms}}");
+
   const handleAddMessage = async () => {
     if (!orderMessage || !storeName || !selectedStatus) {
       toast.error("Preencha todos os campos obrigatórios");
       return;
     }
-
-    const translatedMessage = storeName
-      .replace(/{{nome}}/g, "{{name}}")
-      .replace(/{{telefone}}/g, "{{phone}}")
-      .replace(/{{email}}/g, "{{email}}")
-      .replace(/{{documento}}/g, "{{document}}")
-      .replace(/{{pix}}/g, "{{pix}}")
-      .replace(/{{ms}}/g, "{{ms}}");
 
     setIsVisible(true);
     try {
@@ -156,7 +158,7 @@ const Messages: FC = () => {
 
     const data = {
       customer_phone: numberTest,
-      body: storeName,
+      body: translatedMessage,
     };
 
     try {
