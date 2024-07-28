@@ -32,6 +32,7 @@ const Messages: FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  const [numberTest, setNumberTest] = useState<string>("");
   const [allStores, setAllStores] = useState<Store[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -95,6 +96,7 @@ const Messages: FC = () => {
       setOrderMessage("");
       setSelectedStatus(null);
       setSelectedStoreId(null);
+      setNumberTest("");
       toast.success("Mensagem cadastrada com sucesso!");
     } catch (error) {
       toast.error("Erro ao cadastrar mensagem");
@@ -149,6 +151,23 @@ const Messages: FC = () => {
     return translations[status] || status;
   };
 
+  const sendMessageTest = async () => {
+    toast.warn("Enviando mensagem...");
+
+    const data = {
+      customer_phone: numberTest,
+      body: storeName,
+    };
+
+    try {
+      await axios.post(`/api/messages/send`, data);
+      toast.success("Mensagem de teste enviada com sucesso");
+    } catch (e) {
+      toast.error("Erro ao enviar teste de mensagem");
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     onGetAllStores();
     onGetAllMessages();
@@ -160,6 +179,18 @@ const Messages: FC = () => {
       <Header />
       <div className={styles.container}>
         <form className={styles.form} onSubmit={handleSubmit}>
+          <label htmlFor="numberTest">
+            Número para realizar o teste de envio
+          </label>
+          <input
+            id="numberTest"
+            type="number"
+            value={numberTest}
+            onChange={(e) => setNumberTest(e.target.value)}
+            placeholder="Digite um número para realizar teste"
+            required
+          />
+
           <label htmlFor="orderMessage">Ordem</label>
           <input
             id="orderMessage"
@@ -259,8 +290,18 @@ const Messages: FC = () => {
               </option>
             ))}
           </select>
-
-          <button type="submit">Cadastrar</button>
+          <div>
+            <button type="submit" id={styles.btn1}>
+              Cadastrar
+            </button>
+            <button
+              type="button"
+              id={styles.btn2}
+              onClick={() => sendMessageTest()}
+            >
+              Testar
+            </button>
+          </div>
         </form>
         <table className={styles.table}>
           <thead>
