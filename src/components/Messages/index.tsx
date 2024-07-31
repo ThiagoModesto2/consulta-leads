@@ -252,13 +252,6 @@ const Messages: FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => insertAtCursor("{{pix}}")}
-              className={styles.tag}
-            >
-              pix
-            </button>
-            <button
-              type="button"
               onClick={() => insertAtCursor("{{ms}}")}
               className={styles.tag}
             >
