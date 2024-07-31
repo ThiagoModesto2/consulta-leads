@@ -208,7 +208,6 @@ const Messages: FC = () => {
             value={numberTest}
             onChange={(e) => setNumberTest(e.target.value)}
             placeholder="Digite um número para realizar teste"
-            required
           />
 
           <label htmlFor="orderMessage">Ordem</label>
