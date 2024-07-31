@@ -66,6 +66,7 @@ const Messages: FC = () => {
     .replace(/{{email}}/g, "{{email}}")
     .replace(/{{documento}}/g, "{{document}}")
     .replace(/{{pix}}/g, "{{pix}}")
+    .replace(/{{pagina}}/g, "{{billet_url}}")
     .replace(/{{ms}}/g, "{{ms}}");
 
   const handleAddMessage = async () => {
@@ -149,6 +150,7 @@ const Messages: FC = () => {
       abandoned_cart: "Abandono de Carrinho",
       canceled: "Cancelado",
       pending: "Pendente",
+      expired: "Pix Expirado",
     };
     return translations[status] || status;
   };
@@ -250,10 +252,24 @@ const Messages: FC = () => {
             </button>
             <button
               type="button"
+              onClick={() => insertAtCursor("{{pix}}")}
+              className={styles.tag}
+            >
+              pix
+            </button>
+            <button
+              type="button"
               onClick={() => insertAtCursor("{{ms}}")}
               className={styles.tag}
             >
               saudação
+            </button>
+            <button
+              type="button"
+              onClick={() => insertAtCursor("{{pagina}}")}
+              className={styles.tag}
+            >
+              página pix
             </button>
           </div>
 
@@ -271,6 +287,8 @@ const Messages: FC = () => {
             <option value="abandoned_cart">Abandono de Carrinho</option>
             <option value="canceled">Cancelado</option>
             <option value="pending">Pendente</option>
+            <option value="expired">Pix expirado</option>
+            <option value="Saldo insuficiente">Saldo insuficiente</option>
           </select>
 
           <label htmlFor="storeSelect">
