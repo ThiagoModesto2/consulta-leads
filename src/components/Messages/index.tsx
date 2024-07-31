@@ -48,7 +48,15 @@ const Messages: FC = () => {
   const onGetAllMessages = async () => {
     try {
       const response = await axios.get("/api/messages/get");
-      setMessages(response?.data || []);
+      const sortedMessages = (response?.data || []).sort(
+        (a: Message, b: Message) => {
+          if (a.orderMessage === b.orderMessage) {
+            return a.status.localeCompare(b.status);
+          }
+          return a.orderMessage - b.orderMessage;
+        }
+      );
+      setMessages(sortedMessages);
     } catch (error) {
       toast.error("Falha ao carregar as mensagens");
     } finally {
@@ -94,7 +102,14 @@ const Messages: FC = () => {
       }
 
       const response = await axios.post<Message>("/api/messages/save", data);
-      setMessages([...messages, response.data]);
+      const newMessages = [...messages, response.data];
+      const sortedMessages = newMessages.sort((a, b) => {
+        if (a.orderMessage === b.orderMessage) {
+          return a.status.localeCompare(b.status);
+        }
+        return a.orderMessage - b.orderMessage;
+      });
+      setMessages(sortedMessages);
       setStoreName("");
       setOrderMessage("");
       setSelectedStatus(null);
@@ -112,7 +127,8 @@ const Messages: FC = () => {
     setIsVisible(true);
     try {
       await axios.delete(`/api/messages/delete?id=${id}`);
-      setMessages(messages.filter((message) => message.id !== id));
+      const newMessages = messages.filter((message) => message.id !== id);
+      setMessages(newMessages);
       toast.success("Mensagem excluída com sucesso!");
     } catch (error) {
       toast.error("Erro ao excluir mensagem");
