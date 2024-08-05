@@ -16,7 +16,13 @@ export const Header: FC = () => {
             <Link href="/">Home</Link>
           </li>
           <li className={styles.li}>
+            <Link href="/tokens">Tokens</Link>
+          </li>
+          <li className={styles.li}>
             <Link href="/loja">Lojas</Link>
+          </li>
+          <li className={styles.li}>
+            <Link href="/produtos">Produtos</Link>
           </li>
           <li className={styles.li}>
             <Link href="/mensagens">Mensagens</Link>

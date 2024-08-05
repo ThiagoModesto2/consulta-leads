@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef, useEffect, type FC, FormEvent } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -14,6 +16,7 @@ interface Message {
   status: string;
   store_id: number | null;
   origem_loja?: string | null;
+  product_id?: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -21,6 +24,12 @@ interface Message {
 interface Store {
   id: number;
   name: string;
+}
+
+interface Product {
+  id: number;
+  product_name: string;
+  store_id: number;
 }
 
 const Messages: FC = () => {
@@ -32,7 +41,12 @@ const Messages: FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [numberTest, setNumberTest] = useState<string>("");
   const [allStores, setAllStores] = useState<Store[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null
+  );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [productsAll, setProductsAll] = useState<Product[]>([]);
 
   const onGetAllStores = async () => {
     try {
@@ -64,6 +78,25 @@ const Messages: FC = () => {
     }
   };
 
+  const onGetProducts = async () => {
+    setIsVisible(true);
+    try {
+      const response = await axios.get("/api/products/get");
+      setProductsAll(response?.data || []);
+    } finally {
+      setIsVisible(false);
+    }
+  };
+
+  const onGetProductsByStore = async (storeId: string) => {
+    try {
+      const response = await axios.get(`/api/products/get?store_id=${storeId}`);
+      setProducts(response?.data || []);
+    } catch (error) {
+      toast.error("Falha ao carregar os produtos da loja selecionada");
+    }
+  };
+
   const translateNewlines = (text: string) => {
     return text.replace(/\n/g, "\\n");
   };
@@ -91,6 +124,7 @@ const Messages: FC = () => {
         status: selectedStatus,
         store_id: selectedStoreId,
         origem_loja: null,
+        product_id: selectedProductId ? parseInt(selectedProductId) : null,
       };
 
       if (
@@ -115,6 +149,7 @@ const Messages: FC = () => {
       setSelectedStatus(null);
       setSelectedStoreId(null);
       setNumberTest("");
+      setSelectedProductId(null);
       toast.success("Mensagem cadastrada com sucesso!");
     } catch (error) {
       toast.error("Erro ao cadastrar mensagem");
@@ -191,7 +226,16 @@ const Messages: FC = () => {
   useEffect(() => {
     onGetAllStores();
     onGetAllMessages();
+    onGetProducts();
   }, []);
+
+  useEffect(() => {
+    if (selectedStoreId) {
+      onGetProductsByStore(selectedStoreId);
+    } else {
+      setProducts([]);
+    }
+  }, [selectedStoreId]);
 
   return (
     <>
@@ -310,14 +354,35 @@ const Messages: FC = () => {
             <option value="" disabled>
               Selecione uma loja
             </option>
-            <option value="perfect-pay">Perfect Pay</option>
-            <option value="kirvano">Kirvano</option>
             {allStores.map((store) => (
               <option key={store.id} value={store.id}>
                 {store.name}
               </option>
             ))}
           </select>
+
+          {selectedStoreId && (
+            <>
+              <label htmlFor="productSelect">
+                Selecionar Produto <small>(Opcional)</small>
+              </label>
+              <select
+                id="productSelect"
+                value={selectedProductId || ""}
+                onChange={(e) => setSelectedProductId(e.target.value)}
+              >
+                <option value="" disabled>
+                  Selecione um produto
+                </option>
+                {products.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.product_name}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
+
           <div>
             <button type="submit" id={styles.btn1}>
               Cadastrar
@@ -339,6 +404,7 @@ const Messages: FC = () => {
               <th>Ordem</th>
               <th>Status</th>
               <th>Loja/Origem</th>
+              <th>Produto</th>
               <th>Criado</th>
               <th>Ação</th>
             </tr>
@@ -346,7 +412,7 @@ const Messages: FC = () => {
           <tbody>
             {messages?.length <= 0 && (
               <tr>
-                <td colSpan={7}>Nenhuma mensagem cadastrada.</td>
+                <td colSpan={8}>Nenhuma mensagem cadastrada.</td>
               </tr>
             )}
             {messages.map((message) => (
@@ -359,6 +425,13 @@ const Messages: FC = () => {
                   {message.origem_loja ||
                     allStores.find((store) => store.id === message.store_id)
                       ?.name}
+                </td>
+                <td>
+                  {message.product_id
+                    ? productsAll.find(
+                        (product) => product.id === message.product_id
+                      )?.product_name || "#"
+                    : "#"}
                 </td>
                 <td>{new Date(message.createdAt).toLocaleString()}</td>
                 <td className={styles.options}>
