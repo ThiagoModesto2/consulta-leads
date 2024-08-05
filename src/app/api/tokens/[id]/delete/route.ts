@@ -4,8 +4,8 @@ import { api } from '@/config/links';
 
 export async function DELETE(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop(); 
 
     if (!id) {
       return NextResponse.json({ error: 'ID do token não fornecido' }, { status: 400 });
