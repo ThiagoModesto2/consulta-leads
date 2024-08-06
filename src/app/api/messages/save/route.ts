@@ -4,7 +4,7 @@ import { api } from '@/config/links';
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, orderMessage, status, store_id, origem_loja, product_id } = await req.json();
+    const { message, orderMessage, status, store_id, origem_loja, product_id, delay } = await req.json();
 
     if (!message || !orderMessage || !status) {
       return NextResponse.json({ error: 'Message, OrderMessage, and Status são obrigatórios' }, { status: 400 });
@@ -16,7 +16,8 @@ export async function POST(req: NextRequest) {
       status,
       store_id: store_id || null,
       origem_loja: origem_loja || null,
-      product_id: product_id || null
+      product_id: product_id || null,
+      delay: delay || null
     });
 
     return NextResponse.json(response.data, { status: 201 });

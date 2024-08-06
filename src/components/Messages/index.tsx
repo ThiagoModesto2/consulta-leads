@@ -13,6 +13,7 @@ interface Message {
   id: number;
   message: string;
   orderMessage: number;
+  delay: number | null; // Adicionei o campo delay aqui
   status: string;
   store_id: number | null;
   origem_loja?: string | null;
@@ -36,6 +37,7 @@ const Messages: FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [storeName, setStoreName] = useState<string>("");
   const [orderMessage, setOrderMessage] = useState<string>("");
+  const [delay, setDelay] = useState<string>(""); // Adicionei o estado delay
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
@@ -111,7 +113,7 @@ const Messages: FC = () => {
     .replace(/{{ms}}/g, "{{ms}}");
 
   const handleAddMessage = async () => {
-    if (!orderMessage || !storeName || !selectedStatus) {
+    if (!orderMessage || !storeName || !selectedStatus || !delay) {
       toast.error("Preencha todos os campos obrigatórios");
       return;
     }
@@ -121,6 +123,7 @@ const Messages: FC = () => {
       const data: any = {
         message: translatedMessage,
         orderMessage: parseInt(orderMessage),
+        delay: delay ? parseInt(delay) : null,
         status: selectedStatus,
         store_id: selectedStoreId,
         origem_loja: null,
@@ -146,6 +149,7 @@ const Messages: FC = () => {
       setMessages(sortedMessages);
       setStoreName("");
       setOrderMessage("");
+      setDelay("");
       setSelectedStatus(null);
       setSelectedStoreId(null);
       setNumberTest("");
@@ -254,15 +258,30 @@ const Messages: FC = () => {
             placeholder="Digite um número para realizar teste"
           />
 
-          <label htmlFor="orderMessage">Ordem</label>
-          <input
-            id="orderMessage"
-            type="number"
-            value={orderMessage}
-            onChange={(e) => setOrderMessage(e.target.value)}
-            placeholder="Ordem da Mensagem"
-            required
-          />
+          <div className={styles.row}>
+            <div className={styles.inputGroup}>
+              <label htmlFor="orderMessage">Ordem</label>
+              <input
+                id="orderMessage"
+                type="number"
+                value={orderMessage}
+                onChange={(e) => setOrderMessage(e.target.value)}
+                placeholder="Ordem da Mensagem"
+                required
+              />
+            </div>
+            <div className={styles.inputGroup}>
+              <label htmlFor="delay">Delay (segundos)</label>
+              <input
+                id="delay"
+                type="number"
+                value={delay}
+                onChange={(e) => setDelay(e.target.value)}
+                placeholder="Delay"
+                required
+              />
+            </div>
+          </div>
 
           <textarea
             id="storeName"
@@ -273,7 +292,7 @@ const Messages: FC = () => {
             required
           />
 
-          <div>
+          <div className={styles.tagContainer}>
             <button
               type="button"
               onClick={() => insertAtCursor("{{nome}}")}
@@ -325,65 +344,67 @@ const Messages: FC = () => {
             </button>
           </div>
 
-          <label htmlFor="statusSelect">Status</label>
-          <select
-            id="statusSelect"
-            value={selectedStatus || ""}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            required
-          >
-            <option value="" disabled>
-              Selecione um status
-            </option>
-            <option value="approved">Aprovado</option>
-            <option value="abandoned_cart">Abandono de Carrinho</option>
-            <option value="canceled">Cancelado</option>
-            <option value="pending">Pendente</option>
-            <option value="expired">Pix expirado</option>
-            <option value="Saldo insuficiente">Saldo insuficiente</option>
-          </select>
-
-          <label htmlFor="storeSelect">
-            Selecionar Loja <small>(Opcional)</small>
-          </label>
-          <select
-            id="storeSelect"
-            value={selectedStoreId || ""}
-            onChange={(e) => setSelectedStoreId(e.target.value)}
-          >
-            <option value="" disabled>
-              Selecione uma loja
-            </option>
-            {allStores.map((store) => (
-              <option key={store.id} value={store.id}>
-                {store.name}
-              </option>
-            ))}
-          </select>
-
-          {selectedStoreId && (
-            <>
-              <label htmlFor="productSelect">
-                Selecionar Produto <small>(Opcional)</small>
-              </label>
+          <div className={styles.selectContainer}>
+            <div className={styles.selectItem}>
+              <label htmlFor="statusSelect">Status</label>
               <select
-                id="productSelect"
-                value={selectedProductId || ""}
-                onChange={(e) => setSelectedProductId(e.target.value)}
+                id="statusSelect"
+                value={selectedStatus || ""}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                required
               >
                 <option value="" disabled>
-                  Selecione um produto
+                  Selecione um status
                 </option>
-                {products.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.product_name}
+                <option value="approved">Aprovado</option>
+                <option value="abandoned_cart">Abandono de Carrinho</option>
+                <option value="canceled">Cancelado</option>
+                <option value="pending">Pendente</option>
+                <option value="expired">Pix expirado</option>
+                <option value="Saldo insuficiente">Saldo insuficiente</option>
+              </select>
+            </div>
+
+            <div className={styles.selectItem}>
+              <label htmlFor="storeSelect">Loja</label>
+              <select
+                id="storeSelect"
+                value={selectedStoreId || ""}
+                onChange={(e) => setSelectedStoreId(e.target.value)}
+              >
+                <option value="" disabled>
+                  Selecione uma loja
+                </option>
+                {allStores.map((store) => (
+                  <option key={store.id} value={store.id}>
+                    {store.name}
                   </option>
                 ))}
               </select>
-            </>
-          )}
+            </div>
 
-          <div>
+            {selectedStoreId && (
+              <div className={styles.selectItem}>
+                <label htmlFor="productSelect">Produto</label>
+                <select
+                  id="productSelect"
+                  value={selectedProductId || ""}
+                  onChange={(e) => setSelectedProductId(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Selecione um produto
+                  </option>
+                  {products.map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.product_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.buttonContainer}>
             <button type="submit" id={styles.btn1}>
               Cadastrar
             </button>
@@ -402,6 +423,7 @@ const Messages: FC = () => {
               <th>ID</th>
               <th>Mensagem</th>
               <th>Ordem</th>
+              <th>Delay</th> {/* Adicionei a coluna Delay na tabela */}
               <th>Status</th>
               <th>Loja/Origem</th>
               <th>Produto</th>
@@ -412,7 +434,7 @@ const Messages: FC = () => {
           <tbody>
             {messages?.length <= 0 && (
               <tr>
-                <td colSpan={8}>Nenhuma mensagem cadastrada.</td>
+                <td colSpan={9}>Nenhuma mensagem cadastrada.</td>
               </tr>
             )}
             {messages.map((message) => (
@@ -420,6 +442,7 @@ const Messages: FC = () => {
                 <td>{message.id}</td>
                 <td>{message.message}</td>
                 <td>{message.orderMessage}</td>
+                <td>{message.delay ?? "#"}</td> {/* Mostra o delay ou # */}
                 <td>{translateStatus(message.status)}</td>
                 <td>
                   {message.origem_loja ||
