@@ -3,12 +3,26 @@ import axios from 'axios';
 import { api } from '@/config/links';
 
 export async function GET(req: NextRequest) {
-  // Obtendo a URL e os parâmetros de pesquisa
-  const { searchParams } = new URL(req.url);
+  // Obtendo a URL
   const url = new URL(req.url);
-  
-  // Obtendo o valor do identifier usando pop
-  const identifier = url.pathname.split('/').pop();
+
+  // Obtendo o valor do identifier da URL manualmente sem usar searchParams
+  const query = url.search;
+  let identifier = null;
+
+  // Extrair o valor do identifier manualmente da query string
+  if (query) {
+    const params = query.substring(1).split('&'); // Remove o '?' e divide os parâmetros
+    for (const param of params) {
+      const [key, value] = param.split('=');
+      if (key === 'identifier') {
+        identifier = value;
+        break;
+      }
+    }
+  }
+
+  console.log("identifier", identifier);
 
   // Verificando se o identifier está presente
   if (!identifier) {
@@ -16,14 +30,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Verificando se o identifier é um número de telefone (10 ou 11 dígitos)
-    const isPhone = /^\d{10,11}$/.test(identifier);
-    // Definindo os parâmetros com base no tipo de identifier
-    const params: Record<string, string> = isPhone ? { phone: identifier } : { document: identifier };
-
-    // Fazendo a requisição para a API externa com os parâmetros apropriados
+    // Fazendo a requisição para a API externa com o identifier como parâmetro
     const response = await axios.get(`${api}/api/search/index.php`, {
-      params,
+      params: { identifier },
     });
 
     // Retornando a resposta da API externa
