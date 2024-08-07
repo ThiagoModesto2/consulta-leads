@@ -206,6 +206,7 @@ const Messages: FC = () => {
       canceled: "Cancelado",
       pending: "Pendente",
       expired: "Pix Expirado",
+      paid: "Pago",
     };
     return translations[status] || status;
   };
@@ -359,6 +360,7 @@ const Messages: FC = () => {
                 <option value="approved">Aprovado</option>
                 <option value="abandoned_cart">Abandono de Carrinho</option>
                 <option value="canceled">Cancelado</option>
+                <option value="paid">Pago</option>
                 <option value="pending">Pendente</option>
                 <option value="expired">Pix expirado</option>
                 <option value="Saldo insuficiente">Saldo insuficiente</option>
