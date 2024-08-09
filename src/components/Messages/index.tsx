@@ -279,7 +279,6 @@ const Messages: FC = () => {
                 value={delay}
                 onChange={(e) => setDelay(e.target.value)}
                 placeholder="Delay"
-                required
               />
             </div>
           </div>
