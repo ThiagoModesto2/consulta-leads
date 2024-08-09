@@ -113,7 +113,7 @@ const Messages: FC = () => {
     .replace(/{{ms}}/g, "{{ms}}");
 
   const handleAddMessage = async () => {
-    if (!orderMessage || !storeName || !selectedStatus || !delay) {
+    if (!orderMessage || !storeName || !selectedStatus) {
       toast.error("Preencha todos os campos obrigatórios");
       return;
     }
