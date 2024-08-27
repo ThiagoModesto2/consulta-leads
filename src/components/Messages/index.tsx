@@ -13,7 +13,7 @@ interface Message {
   id: number;
   message: string;
   orderMessage: number;
-  delay: number | null; // Adicionei o campo delay aqui
+  delay: number | null;
   status: string;
   store_id: number | null;
   origem_loja?: string | null;
@@ -110,7 +110,8 @@ const Messages: FC = () => {
     .replace(/{{documento}}/g, "{{document}}")
     .replace(/{{pix}}/g, "{{pix}}")
     .replace(/{{pagina}}/g, "{{billet_url}}")
-    .replace(/{{ms}}/g, "{{ms}}");
+    .replace(/{{ms}}/g, "{{ms}}")
+    .replace(/{{checkout}}/g, "{{checkout_url}}");
 
   const handleAddMessage = async () => {
     if (!orderMessage || !storeName || !selectedStatus) {
@@ -341,6 +342,13 @@ const Messages: FC = () => {
               className={styles.tag}
             >
               página pix
+            </button>
+            <button
+              type="button"
+              onClick={() => insertAtCursor("{{checkout}}")}
+              className={styles.tag}
+            >
+              página checkout
             </button>
           </div>
 
